@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using APITest.Models;
-using Microsoft.EntityFrameworkCore.SqlServer;
 
 namespace APITest
 {
@@ -28,7 +27,7 @@ namespace APITest
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = @"Server=(localdb)mssqllocaldb;Database=ApiTestDb;Trusted_Connection=True;ConnectionRetryCount=0";
+            string connectionString = Configuration.GetConnectionString("TestDb");
             services.AddDbContext<TodoContext>(opt => opt.UseSqlServer(connectionString));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
