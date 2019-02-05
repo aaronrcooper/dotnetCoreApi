@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using APITest.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,35 +17,55 @@ namespace APITest.Controllers
 
         private readonly TodoContext _context;
 
+        public TodoController(TodoContext context)
+        {
+            _context = context;
+        }
         // GET: api/<controller>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<TodoItem>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return await  _context.TodoItems.ToListAsync();
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<TodoItem>> GetTodoItem(string id)
         {
-            return "value";
+            var todo = await _context.TodoItems.SingleAsync(item => item.Id == id);
+
+            if (todo == null)
+            {
+                return NotFound();
+            }
+
+            return todo;
         }
 
         // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<ActionResult<TodoItem>> Post([FromBody]TodoItem value)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            _context.TodoItems.Add(value);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetTodoItem), new { id = value.Id}, value);
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody]TodoItem value)
         {
+
         }
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(string id)
         {
         }
     }
