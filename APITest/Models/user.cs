@@ -14,8 +14,18 @@ namespace APITest.Models
         [ForeignKey("Person")]
         public string Id { get; set; }
         public Person Person { get; set; }
+        [Required]
         public string Username { get; set; }
-        public string Hash { get; set; }
+        [Required]
+        public byte[] Salt { get; set; }
+        [Required]
         public string HashedPassword { get; set; }
+    }
+
+    public class UserPost
+    {
+        public Person Person { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }

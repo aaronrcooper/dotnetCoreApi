@@ -7,6 +7,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190206164256_AddPersonAndUserEntity.cs" />
     <Compile Remove="Migrations\20190206164256_AddPersonAndUserEntity.Designer.cs" />
+    <Compile Remove="Migrations\20190206202045_AddUserAndPerson.cs" />
+    <Compile Remove="Migrations\20190206202045_AddUserAndPerson.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
