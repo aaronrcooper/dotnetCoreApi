@@ -58,15 +58,32 @@ namespace APITest.Controllers
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]TodoItem value)
+        public async Task<ActionResult<TodoItem>> Put(string id, [FromBody]TodoItem value)
         {
+            if (value.Id != id )
+            {
+                return BadRequest();
+            }
 
+            _context.Entry(value).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public void Delete(string id)
+        public async Task<ActionResult<TodoItem>> Delete(string id)
         {
+            var todo = await _context.TodoItems.SingleAsync(item => item.Id == id);
+
+            if (todo == null)
+            {
+                return NotFound();
+            }
+
+            _context.TodoItems.Remove(todo);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

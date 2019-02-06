@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using APITest.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace APITest
 {
@@ -30,6 +31,12 @@ namespace APITest
             string connectionString = Configuration.GetConnectionString("TestDb");
             services.AddDbContext<TodoContext>(opt => opt.UseSqlServer(connectionString));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            //Swagger generation
+            services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new Info { Title = "Test API", Version = "v1"});
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +50,14 @@ namespace APITest
             {
                 app.UseHsts();
             }
+
+            // Swagger setup
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
+                c.RoutePrefix = "swagger";
+            });
 
             app.UseHttpsRedirection();
             app.UseMvc();
