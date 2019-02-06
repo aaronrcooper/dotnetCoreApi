@@ -13,5 +13,7 @@ namespace APITest.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public bool IsComplete { get; set; }
+        [ForeignKey("User")]
+        public string FK_User_Todo { get; set; }
     }
 }

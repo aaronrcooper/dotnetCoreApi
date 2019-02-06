@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using APITest.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace APITest
@@ -37,6 +38,9 @@ namespace APITest
                 {
                     c.SwaggerDoc("v1", new Info { Title = "Test API", Version = "v1"});
                 });
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,6 +63,7 @@ namespace APITest
                 c.RoutePrefix = "swagger";
             });
 
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
