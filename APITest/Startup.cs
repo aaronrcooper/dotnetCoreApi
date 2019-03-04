@@ -30,7 +30,10 @@ namespace APITest
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("TestDb");
-            services.AddDbContext<TodoContext>(opt => opt.UseSqlServer(connectionString));
+            services.AddDbContext<TodoContext>(opt =>
+            {
+                opt.UseSqlServer(connectionString);
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //Swagger generation

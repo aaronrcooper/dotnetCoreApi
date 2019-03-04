@@ -9,6 +9,24 @@
     <Compile Remove="Migrations\20190206164256_AddPersonAndUserEntity.Designer.cs" />
     <Compile Remove="Migrations\20190206202045_AddUserAndPerson.cs" />
     <Compile Remove="Migrations\20190206202045_AddUserAndPerson.Designer.cs" />
+    <Compile Remove="Migrations\20190207135622_Add.cs" />
+    <Compile Remove="Migrations\20190207135622_Add.Designer.cs" />
+    <Compile Remove="Migrations\20190207135828_Add.cs" />
+    <Compile Remove="Migrations\20190207135828_Add.Designer.cs" />
+    <Compile Remove="Migrations\20190207140239_Add.cs" />
+    <Compile Remove="Migrations\20190207140239_Add.Designer.cs" />
+    <Compile Remove="Migrations\20190207141853_Add.cs" />
+    <Compile Remove="Migrations\20190207141853_Add.Designer.cs" />
+    <Compile Remove="Migrations\20190207142456_Add.cs" />
+    <Compile Remove="Migrations\20190207142456_Add.Designer.cs" />
+    <Compile Remove="Migrations\20190207142737_Add.cs" />
+    <Compile Remove="Migrations\20190207142737_Add.Designer.cs" />
+    <Compile Remove="Migrations\20190207143234_AddPersonAndUser.cs" />
+    <Compile Remove="Migrations\20190207143234_AddPersonAndUser.Designer.cs" />
+    <Compile Remove="Migrations\20190207151115_PersonAndUser.cs" />
+    <Compile Remove="Migrations\20190207151115_PersonAndUser.Designer.cs" />
+    <Compile Remove="Migrations\20190207151459_AddPersonAndUserEntity.cs" />
+    <Compile Remove="Migrations\20190207151459_AddPersonAndUserEntity.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

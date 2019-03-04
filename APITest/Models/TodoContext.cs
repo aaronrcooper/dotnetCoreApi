@@ -19,10 +19,16 @@ namespace APITest.Models
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Person>(p =>
+            {
+                p.ToTable("People");
+                p.HasOne(person => person.User).WithOne(u => u.Person).OnDelete(DeleteBehavior.Cascade);
+            });
+
             builder.Entity<User>(c =>
             {
                 c.HasIndex(e => e.Username).IsUnique();
-                c.HasOne<Person>(p => p.Person).WithOne(p => p.User).OnDelete(DeleteBehavior.Cascade);
+                c.HasOne(u => u.Person).WithOne(p => p.User).OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
