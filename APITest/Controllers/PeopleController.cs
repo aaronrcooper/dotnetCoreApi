@@ -49,7 +49,7 @@ namespace APITest.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        public async Task<ActionResult<Person>> Create([FromBody] Person person)
+        public async Task<ActionResult<Person>> Create(Person person)
         {
             if (ModelState.IsValid)
             {
@@ -62,7 +62,7 @@ namespace APITest.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPut("{id}")]
-        public async Task<ActionResult<Person>> Edit(string id, [FromBody] Person person)
+        public async Task<ActionResult<Person>> Edit(string id, Person person)
         {
             if (id != person.Id)
             {
@@ -85,7 +85,7 @@ namespace APITest.Controllers
             var person = await _context.Persons.FindAsync(id);
             _context.Persons.Remove(person);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Ok();
         }
     }
 }

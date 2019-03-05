@@ -9,4 +9,4 @@ Add-Migration
 Update-Database
   - This command will update the schema of the database.
   - Passing the `-Migration` argument along with a migration name will allow you to revert back to that migration. 
-    ex. `Update-Database -Target:"InitialMigration"`
+    ex. `Update-Database -Migration:"InitialMigration"`

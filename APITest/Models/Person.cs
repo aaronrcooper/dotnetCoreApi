@@ -10,7 +10,7 @@ namespace APITest.Models
     [Table("People")]
     public class Person
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
         [Required]
         public string FirstName { get; set; }

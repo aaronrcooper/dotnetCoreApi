@@ -18,7 +18,7 @@ namespace APITest.Shared
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[SaltLength]);
             var hashedPassword = new Rfc2898DeriveBytes(password, salt, HashIterations).GetBytes(HashedPasswordLength);
 
-            var hashedPasswordString = Convert.ToBase64String(hashedPassword);
+            var hashedPasswordString = Convert.ToBase64String(hashedPassword).Substring(0, 20);
 
             return new SaltedPassword()
             {

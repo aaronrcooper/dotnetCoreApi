@@ -44,21 +44,21 @@ namespace APITest.Controllers
 
         // POST api/<controller>
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> Post([FromBody]TodoItem value)
+        public async Task<ActionResult<TodoItem>> Post(TodoItem value)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            _context.TodoItems.Add(value);
+            _context.TodoItems.AddAsync(value);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetTodoItem), new { id = value.Id}, value);
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<TodoItem>> Put(string id, [FromBody]TodoItem value)
+        public async Task<ActionResult<TodoItem>> Put(string id, TodoItem value)
         {
             if (value.Id != id )
             {

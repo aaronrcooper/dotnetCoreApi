@@ -22,6 +22,7 @@ namespace APITest.Models
             builder.Entity<Person>(p =>
             {
                 p.ToTable("People");
+                p.HasIndex(person => person.Email).IsUnique();
                 p.HasOne(person => person.User).WithOne(u => u.Person).OnDelete(DeleteBehavior.Cascade);
             });
 

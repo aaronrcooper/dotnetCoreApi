@@ -27,6 +27,7 @@ namespace APITest.Models
 
     public class UserPost
     {
+        public Person Person { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
     }
