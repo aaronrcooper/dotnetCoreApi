@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using APITest.Models;
 using APITest.Shared;
+using System.Net.Http.Headers;
 
 namespace APITest.Controllers
 {
@@ -88,8 +90,13 @@ namespace APITest.Controllers
                 HashedPassword = password.HashedPassword,
                 Salt = password.Salt,
                 Username = submittedUser.Username,
+                Person = submittedUser.Person
             };
 
+            if (await UniquePropertyExists(user))
+            {
+                return BadRequest();
+            }
             // Add a person entity to the database and assign that person to the user being added
             user.Person = _context.Persons.Add(submittedUser.Person).Entity;
 
@@ -131,9 +138,37 @@ namespace APITest.Controllers
             return user;
         }
 
+        [HttpPost("Login")]
+        public async Task<HttpResponseMessage> Login(UserCredentials userCredentials)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == userCredentials.Username);
+
+            if (user == null)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+
+            if (Auth.VerifyPassword(userCredentials.Password, user.Salt, user.HashedPassword))
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.OK);
+
+                var cookie = new CookieHeaderValue("UserId", user.Id);
+                cookie.Expires = DateTime.Now.AddMinutes(1);
+                response.Headers.AddCookies(new CookieHeaderValue[] {cookie});
+                return response;
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.BadRequest);
+        }
+
         private bool UserExists(string id)
         {
             return _context.Users.Any(e => e.Id == id);
+        }
+
+        private async Task<bool> UniquePropertyExists(User user)
+        {
+            return await _context.Persons.AnyAsync(p => user.Person.Email == p.Email);
         }
     }
 }

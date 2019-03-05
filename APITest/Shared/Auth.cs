@@ -18,7 +18,7 @@ namespace APITest.Shared
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[SaltLength]);
             var hashedPassword = new Rfc2898DeriveBytes(password, salt, HashIterations).GetBytes(HashedPasswordLength);
 
-            var hashedPasswordString = Convert.ToBase64String(hashedPassword).Substring(0, 20);
+            var hashedPasswordString = Convert.ToBase64String(hashedPassword).Substring(0, HashedPasswordLength);
 
             return new SaltedPassword()
             {
@@ -29,7 +29,7 @@ namespace APITest.Shared
 
         public static bool VerifyPassword(string password, byte[] salt, string hashedPassword)
         {
-            return Convert.ToBase64String(new Rfc2898DeriveBytes(password, salt, HashIterations).GetBytes(HashedPasswordLength)) == hashedPassword;
+            return Convert.ToBase64String(new Rfc2898DeriveBytes(password, salt, HashIterations).GetBytes(HashedPasswordLength)).Substring(0, HashedPasswordLength) == hashedPassword;
         }
     }
 
