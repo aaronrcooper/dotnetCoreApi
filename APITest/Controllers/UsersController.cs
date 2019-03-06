@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using APITest.Models;
 using APITest.Shared;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Primitives;
 
 namespace APITest.Controllers
 {
@@ -48,6 +49,22 @@ namespace APITest.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(string id, UserPut submittedUser)
         {
+            string userId;
+            // Attempt to get the userId cookie out of the request headers
+            if (Request.Headers.TryGetValue("UserId", out StringValues cookieId))
+            {
+                userId = cookieId.ToString();
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+            if (id != submittedUser.UserId || id != userId)
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid || id != submittedUser.Person.Id)
             {
                 return BadRequest();
