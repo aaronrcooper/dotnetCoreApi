@@ -46,13 +46,22 @@ namespace APITest.Controllers
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(string id, User user)
+        public async Task<IActionResult> PutUser(string id, UserPut submittedUser)
         {
-            if (id != user.Id)
+            if (!ModelState.IsValid || id != submittedUser.Person.Id)
             {
                 return BadRequest();
             }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == submittedUser.UserId);
 
+            if (!string.IsNullOrEmpty(submittedUser.Password))
+            {
+                var saltedPassword = Auth.GeneratePassword(submittedUser.Password);
+                user.HashedPassword = saltedPassword.HashedPassword;
+                user.Salt = saltedPassword.Salt;
+            }
+
+            _context.Entry(submittedUser.Person).State = EntityState.Modified;
             _context.Entry(user).State = EntityState.Modified;
 
             try
