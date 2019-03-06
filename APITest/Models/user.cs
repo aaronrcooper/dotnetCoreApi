@@ -15,13 +15,13 @@ namespace APITest.Models
         public string Id { get; set; }
         public virtual Person Person { get; set; }
         [Required]
+        [MaxLength(32)]
         public string Username { get; set; }
         [Required]
         [MaxLength(16)]
         [MinLength(16)]
         public byte[] Salt { get; set; }
         [Required]
-        [StringLength(20)]
         public string HashedPassword { get; set; }
     }
 

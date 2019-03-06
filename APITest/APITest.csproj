@@ -27,6 +27,10 @@
     <Compile Remove="Migrations\20190207151115_PersonAndUser.Designer.cs" />
     <Compile Remove="Migrations\20190207151459_AddPersonAndUserEntity.cs" />
     <Compile Remove="Migrations\20190207151459_AddPersonAndUserEntity.Designer.cs" />
+    <Compile Remove="Migrations\20190306151516_UpdatePersonAndUserFields.cs" />
+    <Compile Remove="Migrations\20190306151516_UpdatePersonAndUserFields.Designer.cs" />
+    <Compile Remove="Migrations\20190306151812_UpdateFields.cs" />
+    <Compile Remove="Migrations\20190306151812_UpdateFields.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,8 +5,15 @@ This project created a new database, as well as updates the tables using Entity 
 
 ## Database Schema can be updated using the following commands:
 Add-Migration
-  - This will prompt for a name for the update that will be added to the \_EFMigrationHstory table in the created database.
+  - This will prompt for a name for the update that will be added to the \_EFMigrationHistory table in the created database.
 Update-Database
   - This command will update the schema of the database.
   - Passing the `-Migration` argument along with a migration name will allow you to revert back to that migration. 
     ex. `Update-Database -Migration:"InitialMigration"`
+
+
+## Desired features from this test API
+- Ability to add user entities
+- Ability for a user to login
+- CRUD operations for entities
+- Persistent migrations for database

@@ -61,7 +61,7 @@ namespace APITest.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (await UserExists(id) == false)
                 {
                     return NotFound();
                 }
@@ -109,7 +109,7 @@ namespace APITest.Controllers
             }
             catch (DbUpdateException)
             {
-                if (UserExists(user.Id))
+                if (await UserExists(user.Id))
                 {
                     return Conflict();
                 }
@@ -139,13 +139,13 @@ namespace APITest.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<HttpResponseMessage> Login(UserCredentials userCredentials)
+        public async Task<ActionResult<HttpResponseMessage>> Login(UserCredentials userCredentials)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == userCredentials.Username);
 
             if (user == null)
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             if (Auth.VerifyPassword(userCredentials.Password, user.Salt, user.HashedPassword))
@@ -158,12 +158,12 @@ namespace APITest.Controllers
                 return response;
             }
 
-            return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            return Unauthorized();
         }
 
-        private bool UserExists(string id)
+        private async Task<bool> UserExists(string id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return await _context.Users.AnyAsync(e => e.Id == id);
         }
 
         private async Task<bool> UniquePropertyExists(User user)
