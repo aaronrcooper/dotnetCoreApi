@@ -23,6 +23,9 @@ namespace APITest.Models
         public byte[] Salt { get; set; }
         [Required]
         public string HashedPassword { get; set; }
+        [ForeignKey(nameof(Role))]
+        public string RoleId { get; set; }
+        public virtual Role Role { get; set; }
     }
 
     public class UserPost

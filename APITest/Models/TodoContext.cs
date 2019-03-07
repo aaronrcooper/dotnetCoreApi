@@ -11,6 +11,7 @@ namespace APITest.Models
         public DbSet<TodoItem> TodoItems { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         public TodoContext(DbContextOptions<TodoContext> options) : base(options)
         {
@@ -31,6 +32,9 @@ namespace APITest.Models
                 c.HasIndex(e => e.Username).IsUnique();
                 c.HasOne(u => u.Person).WithOne(p => p.User).OnDelete(DeleteBehavior.Cascade);
             });
+
+            builder.Entity<Role>().HasData(new Role() { Id = Guid.NewGuid().ToString(), UserRole = "Administrator"});
+            builder.Entity<Role>().HasData(new Role() { Id = Guid.NewGuid().ToString(), UserRole = "User"});
         }
     }
 }
