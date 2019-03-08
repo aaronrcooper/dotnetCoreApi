@@ -55,6 +55,8 @@ namespace APITest.Controllers
             {
                 return BadRequest();
             }
+
+            await _context.Persons.AddAsync(person);
             return person;
         }
 

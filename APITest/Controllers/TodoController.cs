@@ -51,7 +51,7 @@ namespace APITest.Controllers
                 return BadRequest();
             }
 
-            _context.TodoItems.AddAsync(value);
+            await _context.TodoItems.AddAsync(value);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetTodoItem), new { id = value.Id}, value);
         }
