@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using APITest.Shared;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 
 namespace APITest.Models
 {
@@ -13,7 +15,6 @@ namespace APITest.Models
         // Generate a GUID for this field 
         [ForeignKey(nameof(Person))]
         public string Id { get; set; }
-        public virtual Person Person { get; set; }
         [Required]
         [MaxLength(32)]
         public string Username { get; set; }
@@ -25,7 +26,28 @@ namespace APITest.Models
         public string HashedPassword { get; set; }
         [ForeignKey(nameof(Role))]
         public string RoleId { get; set; }
+
+        // Navigation Properties
+        public virtual Person Person { get; set; }
         public virtual Role Role { get; set; }
+
+        public static async Task<bool> isAdmin(TodoContext context, User User)
+        {
+            if (context == null || User == null)
+            {
+                return false;
+            }
+
+            var user = await context.Users.FirstOrDefaultAsync(u => u.RoleId == User.RoleId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            await context.Entry(user).Reference(u => u.Role).LoadAsync();
+            return user.Role.UserRole.ToUpper() == "ADMININSTATOR";
+        }
     }
 
     public class UserPost

@@ -31,6 +31,8 @@
     <Compile Remove="Migrations\20190306151516_UpdatePersonAndUserFields.Designer.cs" />
     <Compile Remove="Migrations\20190306151812_UpdateFields.cs" />
     <Compile Remove="Migrations\20190306151812_UpdateFields.Designer.cs" />
+    <Compile Remove="Migrations\20190307172553_AddRoles.cs" />
+    <Compile Remove="Migrations\20190307172553_AddRoles.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

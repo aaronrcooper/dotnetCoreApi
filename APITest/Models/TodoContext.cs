@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using APITest.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace APITest.Models
@@ -33,8 +34,33 @@ namespace APITest.Models
                 c.HasOne(u => u.Person).WithOne(p => p.User).OnDelete(DeleteBehavior.Cascade);
             });
 
-            builder.Entity<Role>().HasData(new Role() { Id = Guid.NewGuid().ToString(), UserRole = "Administrator"});
-            builder.Entity<Role>().HasData(new Role() { Id = Guid.NewGuid().ToString(), UserRole = "User"});
+
+            #region *** SEED DATA ***
+
+            // Admin Guid
+            Role adminRole = new Role() { Id = Guid.NewGuid().ToString(), UserRole = "Administrator" };
+            builder.Entity<Role>().HasData(adminRole);
+            builder.Entity<Role>().HasData(new Role() { Id = Guid.NewGuid().ToString(), UserRole = "User" });
+            // Initialize admin Guid
+            string adminGuid = Guid.NewGuid().ToString();
+
+            builder.Entity<Person>().HasData(new Person()
+            {
+                Address = "N/a",
+                City = "Pittsburgh",
+                Email = "N/a",
+                FirstName = "Aaron",
+                LastName = "Cooper",
+                Id = adminGuid,
+                State = "PA",
+                Zipcode = "N/a"
+            });
+
+            //Add admin user
+            var hashedPassword = Auth.GeneratePassword("password");
+            builder.Entity<User>().HasData(new User() { HashedPassword = hashedPassword.HashedPassword, Id = adminGuid, Salt = hashedPassword.Salt, Username = "Admin", RoleId = adminRole.Id });
+
+            #endregion
         }
     }
 }

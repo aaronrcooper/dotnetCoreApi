@@ -65,7 +65,7 @@ namespace APITest.Controllers
                 return Unauthorized();
             }
 
-            if (!ModelState.IsValid || id != submittedUser.Person.Id)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
@@ -78,7 +78,10 @@ namespace APITest.Controllers
                 user.Salt = saltedPassword.Salt;
             }
 
-            _context.Entry(submittedUser.Person).State = EntityState.Modified;
+            if (submittedUser.Person != null)
+            {
+                _context.Entry(submittedUser.Person).State = EntityState.Modified;
+            }
             _context.Entry(user).State = EntityState.Modified;
 
             try

@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace APITest.Migrations
 {
-    public partial class AddRoles : Migration
+    public partial class AddRolesAndSeedData : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,14 +25,24 @@ namespace APITest.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Roles",
-                columns: new[] { "Id", "UserRole" },
-                values: new object[] { "a9d08674-8ffe-4c26-9807-51afea125222", "Administrator" });
+                table: "People",
+                columns: new[] { "Id", "Address", "City", "Email", "FirstName", "LastName", "State", "Zipcode" },
+                values: new object[] { "eaa559e4-090c-4706-a776-ffa16e7a2191", "N/a", "Pittsburgh", "N/a", "Aaron", "Cooper", "PA", "N/a" });
 
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "UserRole" },
-                values: new object[] { "500073d7-98aa-42f1-8c06-ced76979ec20", "User" });
+                values: new object[] { "a8cc16b7-aa6b-47d3-909a-06fdcae81619", "Administrator" });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "UserRole" },
+                values: new object[] { "8110bff0-12a7-4cc7-906d-a9c052727e06", "User" });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "HashedPassword", "RoleId", "Salt", "Username" },
+                values: new object[] { "eaa559e4-090c-4706-a776-ffa16e7a2191", "Ov4B87zmh9j/dEG/y/BQlT3S8FA=", "a8cc16b7-aa6b-47d3-909a-06fdcae81619", new byte[] { 92, 251, 117, 81, 232, 198, 132, 52, 28, 94, 233, 112, 135, 156, 117, 187 }, "Admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
@@ -44,9 +55,7 @@ namespace APITest.Migrations
                 column: "RoleId",
                 principalTable: "Roles",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
-
-            migrationBuilder.Sql(@"UPDATE USERS SET ROLEID = '500073d7-98aa-42f1-8c06-ced76979ec20' WHERE ROLEID IS NULL");
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -61,6 +70,16 @@ namespace APITest.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_Users_RoleId",
                 table: "Users");
+
+            migrationBuilder.DeleteData(
+                table: "Users",
+                keyColumn: "Id",
+                keyValue: "eaa559e4-090c-4706-a776-ffa16e7a2191");
+
+            migrationBuilder.DeleteData(
+                table: "People",
+                keyColumn: "Id",
+                keyValue: "eaa559e4-090c-4706-a776-ffa16e7a2191");
 
             migrationBuilder.DropColumn(
                 name: "RoleId",

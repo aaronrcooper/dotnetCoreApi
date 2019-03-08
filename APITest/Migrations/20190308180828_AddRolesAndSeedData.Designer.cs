@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APITest.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    [Migration("20190307172553_AddRoles")]
-    partial class AddRoles
+    [Migration("20190308180828_AddRolesAndSeedData")]
+    partial class AddRolesAndSeedData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -59,6 +59,19 @@ namespace APITest.Migrations
                         .IsUnique();
 
                     b.ToTable("People");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "eaa559e4-090c-4706-a776-ffa16e7a2191",
+                            Address = "N/a",
+                            City = "Pittsburgh",
+                            Email = "N/a",
+                            FirstName = "Aaron",
+                            LastName = "Cooper",
+                            State = "PA",
+                            Zipcode = "N/a"
+                        });
                 });
 
             modelBuilder.Entity("APITest.Models.Role", b =>
@@ -75,12 +88,12 @@ namespace APITest.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a9d08674-8ffe-4c26-9807-51afea125222",
+                            Id = "a8cc16b7-aa6b-47d3-909a-06fdcae81619",
                             UserRole = "Administrator"
                         },
                         new
                         {
-                            Id = "500073d7-98aa-42f1-8c06-ced76979ec20",
+                            Id = "8110bff0-12a7-4cc7-906d-a9c052727e06",
                             UserRole = "User"
                         });
                 });
@@ -126,6 +139,16 @@ namespace APITest.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "eaa559e4-090c-4706-a776-ffa16e7a2191",
+                            HashedPassword = "Ov4B87zmh9j/dEG/y/BQlT3S8FA=",
+                            RoleId = "a8cc16b7-aa6b-47d3-909a-06fdcae81619",
+                            Salt = new byte[] { 92, 251, 117, 81, 232, 198, 132, 52, 28, 94, 233, 112, 135, 156, 117, 187 },
+                            Username = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("APITest.Models.User", b =>
