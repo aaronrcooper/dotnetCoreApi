@@ -21,6 +21,7 @@ namespace APITest.Controllers
 
         // GET: People
         [HttpGet]
+        [Produces(typeof(List<Person>))]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Persons.ToListAsync());
@@ -28,7 +29,8 @@ namespace APITest.Controllers
 
         // GET: People/Details/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Person>> Details(string id)
+        [Produces(typeof(Person))]
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
@@ -42,14 +44,15 @@ namespace APITest.Controllers
                 return NotFound();
             }
 
-            return View(person);
+            return Ok(person);
         }
 
         // POST: People/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        public async Task<ActionResult<Person>> Create(Person person)
+        [Produces(typeof(Person))]
+        public async Task<IActionResult> Create([FromBody] Person person)
         {
             if (ModelState.IsValid)
             {
@@ -57,14 +60,15 @@ namespace APITest.Controllers
             }
 
             await _context.Persons.AddAsync(person);
-            return person;
+            return CreatedAtAction(nameof(Create), person);
         }
 
         // POST: People/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPut("{id}")]
-        public async Task<ActionResult<Person>> Edit(string id, Person person)
+        [Produces(typeof(Person))]
+        public async Task<IActionResult> Edit(string id, [FromBody]Person person)
         {
             if (id != person.Id)
             {
@@ -77,7 +81,7 @@ namespace APITest.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return person;
+            return Ok(person);
         }
 
         // POST: People/Delete/5
