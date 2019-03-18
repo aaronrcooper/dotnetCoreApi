@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using APITest.Exceptions.NotFound;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using APITest.Models;
+using APITest.Services;
 
 namespace APITest.Controllers
 {
     [Route("api/[controller]")]
     public class PeopleController : Controller
     {
-        private readonly TodoContext _context;
-
-        public PeopleController(TodoContext context)
+        private IPersonService _personService;
+        public PeopleController(IPersonService personService)
         {
-            _context = context;
+            _personService = personService;
         }
 
         // GET: People
@@ -24,7 +25,7 @@ namespace APITest.Controllers
         [Produces(typeof(List<Person>))]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Persons.ToListAsync());
+            return Ok(await _personService.GetAll());
         }
 
         // GET: People/Details/5
@@ -37,14 +38,14 @@ namespace APITest.Controllers
                 return NotFound();
             }
 
-            var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (person == null)
+            try
             {
-                return NotFound();
+                return Ok(await _personService.Get(id));
             }
-
-            return Ok(person);
+            catch (PersonNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         // POST: People/Create
@@ -59,8 +60,15 @@ namespace APITest.Controllers
                 return BadRequest();
             }
 
-            await _context.Persons.AddAsync(person);
-            return CreatedAtAction(nameof(Create), person);
+            try
+            {
+                await _personService.Create(person);
+                return CreatedAtAction(nameof(Create), person);
+            }
+            catch (PersonNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         // POST: People/Edit/5
@@ -70,15 +78,13 @@ namespace APITest.Controllers
         [Produces(typeof(Person))]
         public async Task<IActionResult> Edit(string id, [FromBody]Person person)
         {
-            if (id != person.Id)
+            try
             {
-                return NotFound();
+                await _personService.Update(id, person);
             }
-
-            if (ModelState.IsValid)
+            catch (PersonNotFoundException e)
             {
-                _context.Update(person);
-                await _context.SaveChangesAsync();
+                return NotFound(e.Message);
             }
 
             return Ok(person);
@@ -88,10 +94,15 @@ namespace APITest.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var person = await _context.Persons.FindAsync(id);
-            _context.Persons.Remove(person);
-            await _context.SaveChangesAsync();
-            return Ok();
+            try
+            {
+                _personService.Delete(id);
+                return Ok();
+            }
+            catch (PersonNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
     }
 }

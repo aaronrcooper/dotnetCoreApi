@@ -13,5 +13,6 @@ namespace APITest.Services
         User Update(string id, User user);
         void Delete(string id);
         User Create(User user);
+        Task<bool> isAdmin(TodoContext context, User user);
     }
 }

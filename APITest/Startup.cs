@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using APITest.Models;
+using APITest.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -43,7 +44,9 @@ namespace APITest
                 });
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
-
+            services.AddScoped<IPersonService, PersonService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITodoService, TodoService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -6,12 +6,12 @@ using APITest.Models;
 
 namespace APITest.Services
 {
-    interface IPersonService
+    public interface IPersonService
     {
-        Person Get(string id);
-        IEnumerable<Person> GetAll();
-        Person Update(string id, Person person);
+        Task<Person> Get(string id);
+        Task<IEnumerable<Person>> GetAll();
+        Task<Person> Update(string id, Person person);
         void Delete(string id);
-        Person Create(Person person);
+        Task<Person> Create(Person person);
     }
 }
