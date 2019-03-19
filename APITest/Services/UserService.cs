@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using APITest.Exceptions.BadRequest;
 using APITest.Exceptions.Conflict;
@@ -8,15 +12,20 @@ using APITest.Exceptions.NotFound;
 using APITest.Models;
 using APITest.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace APITest.Services
 {
     public class UserService : IUserService
     {
-        public TodoContext _context;
-        public UserService(TodoContext context)
+        private TodoContext _context;
+        private IConfiguration _config;
+
+        public UserService(TodoContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         public async Task<User> Create(UserPost submittedUser)
@@ -111,9 +120,9 @@ namespace APITest.Services
         /// </summary>
         /// <param name="credentials"></param>
         /// <returns></returns>
-        public async Task<User> Login(UserCredentials credentials)
+        public async Task<JwtSecurityToken> Login(UserCredentials credentials)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == credentials.Username);
+            var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == credentials.Username);
 
             if (user == null)
             {
@@ -122,7 +131,7 @@ namespace APITest.Services
 
             if (Auth.VerifyPassword(credentials.Password, user.Salt, user.HashedPassword))
             {
-                return user;
+                return await GenerateToken(user);
             }
 
             return null;
@@ -163,6 +172,37 @@ namespace APITest.Services
             }
 
             return user;
+        }
+
+        public async Task<JwtSecurityToken> GenerateToken(User user)
+        {
+            return await Task.Run(() =>
+            {
+                List<Claim> claims = new List<Claim>()
+                {
+                    // Create a new guid so the JWT id can only be used once
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
+                    // Set the JWT user id as the subscriber
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                    // set JWT issued at time
+                    new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
+                    new Claim("role", user.Role.UserRole),
+                };
+
+                var key = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_config.GetSection("jwt").GetSection("secret").Value));
+                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var token = new JwtSecurityToken(_config.GetSection("jwt").GetSection("issuer").Value,
+                    _config.GetSection("jwt").GetSection("audience").Value,
+                    claims,
+                    DateTime.Now,
+                    DateTime.Now.AddMinutes(1),
+                    credentials
+                );
+
+                return token;
+            });
         }
 
         private async Task<bool> UserExists(string id)

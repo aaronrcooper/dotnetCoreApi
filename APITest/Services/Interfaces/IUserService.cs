@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using APITest.Models;
@@ -14,6 +15,7 @@ namespace APITest.Services
         void Delete(string id);
         Task<User> Create(UserPost user);
         Task<bool> IsAdmin(User user);
-        Task<User> Login(UserCredentials credentials);
+        Task<JwtSecurityToken> Login(UserCredentials credentials);
+        Task<JwtSecurityToken> GenerateToken(User user);
     }
 }

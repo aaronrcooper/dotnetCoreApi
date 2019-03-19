@@ -115,14 +115,14 @@ namespace APITest.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult<HttpResponseMessage>> Login(UserCredentials userCredentials)
+        public async Task<IActionResult> Login(UserCredentials userCredentials)
         {
             try
             {
                 var user = await UserService.Login(userCredentials);
                 if (user != null)
                 {
-                    return Ok(user.Id);
+                    return Ok(user.EncodedPayload);
                 }
             }
             catch (UserNotFoundException)
