@@ -92,7 +92,7 @@ namespace APITest.Controllers
 
         // POST: People/Delete/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public IActionResult DeleteConfirmed(string id)
         {
             try
             {

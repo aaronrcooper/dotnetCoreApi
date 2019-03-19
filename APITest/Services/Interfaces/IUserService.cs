@@ -8,11 +8,12 @@ namespace APITest.Services
 {
     public interface IUserService
     {
-        User Get(string id);
-        IEnumerable<User> GetAll();
-        User Update(string id, User user);
+        Task<User> Get(string id);
+        Task<IEnumerable<User>> GetAll();
+        Task<User> Update(string id, UserPut user);
         void Delete(string id);
-        User Create(User user);
-        Task<bool> isAdmin(TodoContext context, User user);
+        Task<User> Create(UserPost user);
+        Task<bool> IsAdmin(User user);
+        Task<User> Login(UserCredentials credentials);
     }
 }

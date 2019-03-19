@@ -30,24 +30,6 @@ namespace APITest.Models
         // Navigation Properties
         public virtual Person Person { get; set; }
         public virtual Role Role { get; set; }
-
-        public static async Task<bool> isAdmin(TodoContext context, User User)
-        {
-            if (context == null || User == null)
-            {
-                return false;
-            }
-
-            var user = await context.Users.FirstOrDefaultAsync(u => u.RoleId == User.RoleId);
-
-            if (user == null)
-            {
-                return false;
-            }
-
-            await context.Entry(user).Reference(u => u.Role).LoadAsync();
-            return user.Role.UserRole.ToUpper() == "ADMININSTATOR";
-        }
     }
 
     public class UserPost

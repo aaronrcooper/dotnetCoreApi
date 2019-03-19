@@ -9,6 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using APITest.Models;
 using APITest.Shared;
 using System.Net.Http.Headers;
+using APITest.Exceptions.BadRequest;
+using APITest.Exceptions.Conflict;
+using APITest.Exceptions.NotFound;
+using APITest.Services;
 using Microsoft.Extensions.Primitives;
 
 namespace APITest.Controllers
@@ -17,87 +21,51 @@ namespace APITest.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly TodoContext _context;
+        private readonly IUserService UserService;
 
-        public UsersController(TodoContext context)
+        public UsersController(IUserService userService)
         {
-            _context = context;
+            UserService = userService;
         }
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        [Produces(typeof(IEnumerable<User>))]
+        public async Task<IActionResult> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return Ok(await UserService.GetAll());
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(string id)
+        [Produces(typeof(User))]
+        public async Task<IActionResult> GetUser(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await UserService.Get(id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return Ok(user);
         }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(string id, UserPut submittedUser)
         {
-            string userId;
-            // Attempt to get the userId cookie out of the request headers
-            if (Request.Headers.TryGetValue("UserId", out StringValues cookieId))
-            {
-                userId = cookieId.ToString();
-            }
-            else
-            {
-                return BadRequest();
-            }
-
-            if (id != submittedUser.UserId || id != userId)
-            {
-                return Unauthorized();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == submittedUser.UserId);
-
-            if (!string.IsNullOrEmpty(submittedUser.Password))
-            {
-                var saltedPassword = Auth.GeneratePassword(submittedUser.Password);
-                user.HashedPassword = saltedPassword.HashedPassword;
-                user.Salt = saltedPassword.Salt;
-            }
-
-            if (submittedUser.Person != null)
-            {
-                _context.Entry(submittedUser.Person).State = EntityState.Modified;
-            }
-            _context.Entry(user).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await UserService.Update(id, submittedUser);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (BadRequestException)
             {
-                if (await UserExists(id) == false)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
+            }
+            catch (ConflictException)
+            {
+                return Conflict();
             }
 
             return NoContent();
@@ -113,39 +81,18 @@ namespace APITest.Controllers
                 return BadRequest();
             }
 
-            SaltedPassword password = Auth.GeneratePassword(submittedUser.Password);
-            User user = new User()
-            {
-                HashedPassword = password.HashedPassword,
-                Salt = password.Salt,
-                Username = submittedUser.Username,
-                Person = submittedUser.Person
-            };
-
-            if (await UniquePropertyExists(user))
-            {
-                return BadRequest();
-            }
-            // Add a person entity to the database and assign that person to the user being added
-            user.Person = _context.Persons.Add(submittedUser.Person).Entity;
-
-            // Add user to database
-            _context.Users.Add(user);
-
+            User user;
             try
             {
-                await _context.SaveChangesAsync();
+                user = await UserService.Create(submittedUser);
             }
-            catch (DbUpdateException)
+            catch (ConflictException)
             {
-                if (await UserExists(user.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return Conflict();
+            }
+            catch (BadRequestException)
+            {
+                return BadRequest();
             }
 
             return CreatedAtAction("GetUser", new { id = user.Id }, user);
@@ -153,51 +100,37 @@ namespace APITest.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(string id)
+        public IActionResult DeleteUser(string id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
+                UserService.Delete(id);
+            }
+            catch (UserNotFoundException )
+            {
+                return BadRequest();
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return user;
+            return NoContent();
         }
 
         [HttpPost("Login")]
         public async Task<ActionResult<HttpResponseMessage>> Login(UserCredentials userCredentials)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == userCredentials.Username);
-
-            if (user == null)
+            try
             {
-                return NotFound();
+                var user = await UserService.Login(userCredentials);
+                if (user != null)
+                {
+                    return Ok(user.Id);
+                }
             }
-
-            if (Auth.VerifyPassword(userCredentials.Password, user.Salt, user.HashedPassword))
+            catch (UserNotFoundException)
             {
-                var response = new HttpResponseMessage(HttpStatusCode.OK);
-
-                var cookie = new CookieHeaderValue("UserId", user.Id);
-                cookie.Expires = DateTime.Now.AddMinutes(1);
-                response.Headers.AddCookies(new CookieHeaderValue[] {cookie});
-                return response;
+                return BadRequest();
             }
 
             return Unauthorized();
-        }
-
-        private async Task<bool> UserExists(string id)
-        {
-            return await _context.Users.AnyAsync(e => e.Id == id);
-        }
-
-        private async Task<bool> UniquePropertyExists(User user)
-        {
-            return await _context.Persons.AnyAsync(p => user.Person.Email == p.Email);
         }
     }
 }
