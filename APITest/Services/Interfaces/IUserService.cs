@@ -15,7 +15,7 @@ namespace APITest.Services
         void Delete(string id);
         Task<User> Create(UserPost user);
         Task<bool> IsAdmin(User user);
-        Task<JwtSecurityToken> Login(UserCredentials credentials);
-        Task<JwtSecurityToken> GenerateToken(User user);
+        Task<string> Login(UserCredentials credentials);
+        Task<string> GenerateToken(User user);
     }
 }

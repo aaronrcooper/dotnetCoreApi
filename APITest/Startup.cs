@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using System.Threading.Tasks;
+using APITest.Authorization.Handlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using APITest.Models;
 using APITest.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using APITest.Authorization.Rules;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APITest
 {
@@ -33,10 +31,12 @@ namespace APITest
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("TestDb");
+
             services.AddDbContext<TodoContext>(opt =>
             {
                 opt.UseSqlServer(connectionString);
             });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //Swagger generation
@@ -45,6 +45,8 @@ namespace APITest
                     c.SwaggerDoc("v1", new Info { Title = "Test API", Version = "v1"});
                 });
 
+            ConfigureOAuth(services);
+            ConfigureAuth(services);
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IUserService, UserService>();
@@ -83,7 +85,11 @@ namespace APITest
             var audience = Configuration.GetSection("jwt").GetSection("audience").Value;
             var secret = Configuration.GetSection("jwt").GetSection("secret").Value;
 
-            services.AddAuthentication().AddJwtBearer(auth =>
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(auth =>
             {
                 // Save the token that is submitted
                 auth.SaveToken = true;
@@ -95,6 +101,24 @@ namespace APITest
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
                 };
             });
+        }
+
+        public void ConfigureAuth(IServiceCollection services)
+        {
+            // Add a policy that requires the user attempting to perform the operation to be the current user
+            services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("IsCurrentUser", policy =>
+                {
+                    policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+                    policy.Requirements.Add(new CurrentUserRequirement());
+                });
+
+                opts.AddPolicy("IsLoggedIn", policy => policy.RequireClaim(JwtRegisteredClaimNames.Jti));
+            });
+
+            // Add the handler for the current user policy as a singleton
+            services.AddSingleton<IAuthorizationHandler, CurrentUserHandler>();
         }
     }
 }

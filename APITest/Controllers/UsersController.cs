@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using APITest.Models;
-using APITest.Shared;
-using System.Net.Http.Headers;
 using APITest.Exceptions.BadRequest;
 using APITest.Exceptions.Conflict;
 using APITest.Exceptions.NotFound;
 using APITest.Services;
-using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APITest.Controllers
 {
@@ -22,10 +15,12 @@ namespace APITest.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService UserService;
+        private readonly IAuthorizationService AuthorizationService;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, IAuthorizationService authorizationService)
         {
             UserService = userService;
+            AuthorizationService = authorizationService;
         }
 
         // GET: api/Users
@@ -53,8 +48,15 @@ namespace APITest.Controllers
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutUser(string id, UserPut submittedUser)
         {
+            var authorization = await AuthorizationService.AuthorizeAsync(User, submittedUser.UserId, "IsCurrentUser");
+
+            if (!authorization.Succeeded)
+            {
+                return Unauthorized();
+            }
             try
             {
                 await UserService.Update(id, submittedUser);
@@ -115,14 +117,15 @@ namespace APITest.Controllers
         }
 
         [HttpPost("Login")]
+        [Produces(typeof(string))]
         public async Task<IActionResult> Login(UserCredentials userCredentials)
         {
             try
             {
-                var user = await UserService.Login(userCredentials);
-                if (user != null)
+                var token = await UserService.Login(userCredentials);
+                if (!string.IsNullOrEmpty(token))
                 {
-                    return Ok(user.EncodedPayload);
+                    return Ok(token);
                 }
             }
             catch (UserNotFoundException)

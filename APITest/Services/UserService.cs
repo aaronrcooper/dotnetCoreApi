@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using APITest.Authorization;
 using APITest.Exceptions.BadRequest;
 using APITest.Exceptions.Conflict;
 using APITest.Exceptions.NotFound;
@@ -120,7 +119,7 @@ namespace APITest.Services
         /// </summary>
         /// <param name="credentials"></param>
         /// <returns></returns>
-        public async Task<JwtSecurityToken> Login(UserCredentials credentials)
+        public async Task<string> Login(UserCredentials credentials)
         {
             var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == credentials.Username);
 
@@ -174,7 +173,7 @@ namespace APITest.Services
             return user;
         }
 
-        public async Task<JwtSecurityToken> GenerateToken(User user)
+        public async Task<string> GenerateToken(User user)
         {
             return await Task.Run(() =>
             {
@@ -182,26 +181,29 @@ namespace APITest.Services
                 {
                     // Create a new guid so the JWT id can only be used once
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
-                    // Set the JWT user id as the subscriber
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                     // set JWT issued at time
                     new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
-                    new Claim("role", user.Role.UserRole),
+                    // Set the JWT user id as the subscriber
+                    new Claim(CustomClaims.UserId, user.Id),
+                    // Add the user role to the claims
+                    new Claim(CustomClaims.UserRole, user.Role.UserRole),
                 };
 
                 var key = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(_config.GetSection("jwt").GetSection("secret").Value));
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                var token = new JwtSecurityToken(_config.GetSection("jwt").GetSection("issuer").Value,
-                    _config.GetSection("jwt").GetSection("audience").Value,
-                    claims,
-                    DateTime.Now,
-                    DateTime.Now.AddMinutes(1),
-                    credentials
+                var token = new JwtSecurityToken(issuer: _config.GetSection("jwt").GetSection("issuer").Value,
+                    audience: _config.GetSection("jwt").GetSection("audience").Value,
+                    claims: claims,
+                    notBefore: DateTime.Now,
+                    expires: DateTime.Now.AddMinutes(5),
+                    signingCredentials: credentials
                 );
 
-                return token;
+                var tokenHandler = new JwtSecurityTokenHandler();
+
+                return tokenHandler.WriteToken(token);
             });
         }
 
