@@ -2,35 +2,69 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using APITest.Exceptions.BadRequest;
+using APITest.Exceptions.NotFound;
 using APITest.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace APITest.Services
 {
     public class TodoService : ITodoService
     {
-        public TodoItem Create(TodoItem todo)
+        private readonly TodoContext _context;
+
+        public TodoService(TodoContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public void Delete(string id)
+        public async Task<TodoItem> Create(TodoItem todo)
         {
-            throw new NotImplementedException();
+            await _context.TodoItems.AddAsync(todo);
+            await _context.SaveChangesAsync();
+            return todo;
         }
 
-        public TodoItem Get(string id)
+        public async void Delete(string id)
         {
-            throw new NotImplementedException();
+            var todo = await _context.TodoItems.SingleAsync(item => item.Id == id);
+
+            if (todo == null)
+            {
+                throw new TodoNotFoundException(id);
+            }
+
+            _context.TodoItems.Remove(todo);
+            await _context.SaveChangesAsync();
         }
 
-        public IEnumerable<TodoItem> GetAll()
+        public async Task<TodoItem> Get(string id)
         {
-            throw new NotImplementedException();
+            var todo = await _context.TodoItems.SingleAsync(item => item.Id == id);
+
+            if (todo == null)
+            {
+                throw new TodoNotFoundException(id);
+            }
+
+            return todo;
         }
 
-        public TodoItem Update(string id, TodoItem todo)
+        public async Task<IEnumerable<TodoItem>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.TodoItems.ToListAsync();
+        }
+
+        public async Task<TodoItem> Update(string id, TodoItem todo)
+        {
+            if (todo.Id != id)
+            {
+                throw new BadRequestException("Todo", id);
+            }
+
+            _context.Entry(todo).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return todo;
         }
     }
 }

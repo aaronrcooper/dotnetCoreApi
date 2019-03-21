@@ -8,10 +8,10 @@ namespace APITest.Services
 {
     public interface ITodoService
     {
-        TodoItem Get(string id);
-        IEnumerable<TodoItem> GetAll();
-        TodoItem Update(string id, TodoItem todo);
+        Task<TodoItem> Get(string id);
+        Task<IEnumerable<TodoItem>> GetAll();
+        Task<TodoItem> Update(string id, TodoItem todo);
         void Delete(string id);
-        TodoItem Create(TodoItem todo);
+        Task<TodoItem> Create(TodoItem todo);
     }
 }

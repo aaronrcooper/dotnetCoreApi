@@ -49,6 +49,7 @@ namespace APITest.Controllers
         // PUT: api/Users/5
         [HttpPut("{id}")]
         [Authorize]
+        [Produces(typeof(string))]
         public async Task<IActionResult> PutUser(string id, UserPut submittedUser)
         {
             var authorization = await AuthorizationService.AuthorizeAsync(User, submittedUser.UserId, "IsCurrentUser");
@@ -59,7 +60,8 @@ namespace APITest.Controllers
             }
             try
             {
-                await UserService.Update(id, submittedUser);
+                var token = await UserService.Update(id, submittedUser);
+                return Ok(token);
             }
             catch (BadRequestException)
             {
@@ -69,13 +71,12 @@ namespace APITest.Controllers
             {
                 return Conflict();
             }
-
-            return NoContent();
         }
 
         // POST: api/Users
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(UserPost submittedUser)
+        [Produces(typeof(string))]
+        public async Task<IActionResult> PostUser(UserPost submittedUser)
         {
             // if not a valid submission, send 400 response
             if (!ModelState.IsValid)
@@ -83,10 +84,11 @@ namespace APITest.Controllers
                 return BadRequest();
             }
 
-            User user;
+            string token;
             try
             {
-                user = await UserService.Create(submittedUser);
+                token = await UserService.Create(submittedUser);
+                return Ok(token);
             }
             catch (ConflictException)
             {
@@ -96,24 +98,22 @@ namespace APITest.Controllers
             {
                 return BadRequest();
             }
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteUser(string id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             try
             {
-                UserService.Delete(id);
+                await Task.Run(() => UserService.Delete(id));
+                return NoContent();
             }
             catch (UserNotFoundException )
             {
                 return BadRequest();
             }
 
-            return NoContent();
         }
 
         [HttpPost("Login")]

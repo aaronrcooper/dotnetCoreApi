@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using APITest.Shared;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.EntityFrameworkCore;
 
 namespace APITest.Models
 {
@@ -30,6 +24,7 @@ namespace APITest.Models
         // Navigation Properties
         public virtual Person Person { get; set; }
         public virtual Role Role { get; set; }
+        public virtual ICollection<TodoItem> TodoItems { get; set; }
     }
 
     public class UserPost
@@ -37,6 +32,7 @@ namespace APITest.Models
         public Person Person { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public string Role { get; set; }
     }
 
     public class UserCredentials

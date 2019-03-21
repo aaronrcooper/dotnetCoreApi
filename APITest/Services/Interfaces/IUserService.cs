@@ -11,9 +11,9 @@ namespace APITest.Services
     {
         Task<User> Get(string id);
         Task<IEnumerable<User>> GetAll();
-        Task<User> Update(string id, UserPut user);
+        Task<string> Update(string id, UserPut user);
         void Delete(string id);
-        Task<User> Create(UserPost user);
+        Task<string> Create(UserPost user);
         Task<bool> IsAdmin(User user);
         Task<string> Login(UserCredentials credentials);
         Task<string> GenerateToken(User user);

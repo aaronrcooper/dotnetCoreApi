@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using APITest.Exceptions.BadRequest;
+using APITest.Exceptions.NotFound;
 using APITest.Models;
-using APITest.Shared;
+using APITest.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,75 +14,92 @@ namespace APITest.Controllers
     public class TodoController : Controller
     {
 
-        private readonly TodoContext _context;
+        private readonly ITodoService TodoService;
 
-        public TodoController(TodoContext context)
+        public TodoController(ITodoService todoService)
         {
-            _context = context;
+            TodoService = todoService;
         }
         // GET: api/<controller>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> Get()
+        [Produces(typeof(IEnumerable<TodoItem>))]
+        public async Task<IActionResult> Get()
         {
-            return await  _context.TodoItems.ToListAsync();
+            return Ok(await TodoService.GetAll());
         }
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItem>> GetTodoItem(string id)
+        [Produces(typeof(TodoItem))]
+        public async Task<IActionResult> GetTodoItem(string id)
         {
-            var todo = await _context.TodoItems.SingleAsync(item => item.Id == id);
-
-            if (todo == null)
+            try
             {
-                return NotFound();
+                var todo = await TodoService.Get(id);
+                return Ok(todo);
             }
-
-            return todo;
+            catch (TodoNotFoundException )
+            {
+                return BadRequest();
+            }
         }
 
         // POST api/<controller>
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> Post(TodoItem value)
+        [Produces(typeof(TodoItem))]
+        public async Task<IActionResult> Post(TodoItem value)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            await _context.TodoItems.AddAsync(value);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetTodoItem), new { id = value.Id}, value);
+            try
+            {
+                var todo = await TodoService.Create(value);
+                return CreatedAtAction(nameof(GetTodoItem), new { id = value.Id }, value);
+            }
+            catch (BadRequestException )
+            {
+                return BadRequest();
+            }
         }
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<TodoItem>> Put(string id, TodoItem value)
+        [Produces(typeof(TodoItem))]
+        public async Task<IActionResult> Put(string id, TodoItem value)
         {
-            if (value.Id != id )
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            _context.Entry(value).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return NoContent();
+            try
+            {
+                var updatedTodo = await TodoService.Update(id, value);
+                return Ok(updatedTodo);
+            }
+            catch (BadRequestException)
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<TodoItem>> Delete(string id)
+        [Produces(typeof(TodoItem))]
+        public async Task<IActionResult> Delete(string id)
         {
-            var todo = await _context.TodoItems.SingleAsync(item => item.Id == id);
-
-            if (todo == null)
+            try
+            {
+                await Task.Run(() => TodoService.Delete(id));
+                return NoContent();
+            }
+            catch (TodoNotFoundException )
             {
                 return NotFound();
             }
-
-            _context.TodoItems.Remove(todo);
-            await _context.SaveChangesAsync();
-            return NoContent();
         }
     }
 }

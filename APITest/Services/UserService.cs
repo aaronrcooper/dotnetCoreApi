@@ -20,14 +20,21 @@ namespace APITest.Services
     {
         private TodoContext _context;
         private IConfiguration _config;
+        private IPersonService _personService;
 
-        public UserService(TodoContext context, IConfiguration config)
+        public UserService(TodoContext context, IPersonService personService, IConfiguration config)
         {
             _context = context;
             _config = config;
+            _personService = personService;
         }
 
-        public async Task<User> Create(UserPost submittedUser)
+        /// <summary>
+        /// Returns a JSON web token if successful, returns null otherwise
+        /// </summary>
+        /// <param name="submittedUser"></param>
+        /// <returns></returns>
+        public async Task<string> Create(UserPost submittedUser)
         {
             SaltedPassword password = Auth.GeneratePassword(submittedUser.Password);
             User user = new User()
@@ -38,12 +45,21 @@ namespace APITest.Services
                 Person = submittedUser.Person
             };
 
+            if (string.IsNullOrEmpty(submittedUser.Role))
+            {
+                user.Role = await GetUserRoleId("user");
+            }
+            else
+            {
+                user.Role = await GetUserRoleId(submittedUser.Role);
+            }
+
             if (await UniquePropertyExists(user))
             {
                 throw new BadRequestException("User", user.Username);
             }
             // Add a person entity to the database and assign that person to the user being added
-            user.Person = _context.Persons.Add(submittedUser.Person).Entity;
+            user.Person = await _personService.Create(submittedUser.Person);
 
             // Add user to database
             _context.Users.Add(user);
@@ -64,19 +80,7 @@ namespace APITest.Services
                 }
             }
 
-            return user;
-        }
-
-        public void Delete(string id)
-        {
-            var user = _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-
-            if (user == null)
-            {
-                throw new UserNotFoundException(id);
-            }
-
-            _context.Remove(user);
+            return await Login(new UserCredentials() { Username = user.Username, Password = submittedUser.Password });
         }
 
         public async Task<User> Get(string id)
@@ -95,6 +99,56 @@ namespace APITest.Services
         {
             return await _context.Users.ToListAsync();
         }
+
+
+        public async Task<string> Update(string id, UserPut submittedUser)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == submittedUser.UserId);
+
+            if (!string.IsNullOrEmpty(submittedUser.Password))
+            {
+                var saltedPassword = Auth.GeneratePassword(submittedUser.Password);
+                user.HashedPassword = saltedPassword.HashedPassword;
+                user.Salt = saltedPassword.Salt;
+            }
+
+            if (submittedUser.Person != null)
+            {
+                await _personService.Update(submittedUser.UserId, submittedUser.Person);
+            }
+            _context.Entry(user).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (await UserExists(id) == false)
+                {
+                    throw new ConflictException("User", id);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return await Login(new UserCredentials() { Username = user.Username, Password = submittedUser.Password });
+        }
+
+        public void Delete(string id)
+        {
+            var user = _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException(id);
+            }
+
+            _context.Remove(user);
+        }
+
 
         public async Task<bool> IsAdmin(User User)
         {
@@ -115,7 +169,7 @@ namespace APITest.Services
         }
 
         /// <summary>
-        /// Returns user object if the user credentials match, returns null if they do not
+        /// Returns a token if the user credentials match, returns null if they do not
         /// </summary>
         /// <param name="credentials"></param>
         /// <returns></returns>
@@ -136,47 +190,12 @@ namespace APITest.Services
             return null;
         }
 
-
-        public async Task<User> Update(string id, UserPut submittedUser)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == submittedUser.UserId);
-
-            if (!string.IsNullOrEmpty(submittedUser.Password))
-            {
-                var saltedPassword = Auth.GeneratePassword(submittedUser.Password);
-                user.HashedPassword = saltedPassword.HashedPassword;
-                user.Salt = saltedPassword.Salt;
-            }
-
-            if (submittedUser.Person != null)
-            {
-                _context.Entry(submittedUser.Person).State = EntityState.Modified;
-            }
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (await UserExists(id) == false)
-                {
-                    throw new ConflictException("User", id);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return user;
-        }
-
         public async Task<string> GenerateToken(User user)
         {
             return await Task.Run(() =>
             {
+                user = _context.Entry(user).Entity;
+
                 List<Claim> claims = new List<Claim>()
                 {
                     // Create a new guid so the JWT id can only be used once
@@ -215,6 +234,19 @@ namespace APITest.Services
         private async Task<bool> UniquePropertyExists(User user)
         {
             return await _context.Persons.AnyAsync(p => user.Person.Email == p.Email);
+        }
+
+        private async Task<Role> GetUserRoleId(string role)
+        {
+            var roleById = await _context.Roles.FirstOrDefaultAsync(r => r.UserRole.ToLower() == role.ToLower());
+
+            if (roleById == null)
+            {
+                // Default to user role
+                roleById = await _context.Roles.FirstOrDefaultAsync(r => r.UserRole.ToLower() == "user");
+            }
+
+            return roleById;
         }
     }
 }

@@ -34,32 +34,32 @@ namespace APITest.Models
                 c.HasOne(u => u.Person).WithOne(p => p.User).OnDelete(DeleteBehavior.Cascade);
             });
 
+            builder.Entity<User>(c => { c.HasMany(u => u.TodoItems).WithOne(t => t.user).OnDelete(DeleteBehavior.Cascade); });
+
 
             #region *** SEED DATA ***
 
             // Admin Guid
-            Role adminRole = new Role() { Id = Guid.NewGuid().ToString(), UserRole = "Administrator" };
+            Role adminRole = new Role() { Id = "a8cc16b7-aa6b-47d3-909a-06fdcae81619", UserRole = "Administrator" };
             builder.Entity<Role>().HasData(adminRole);
-            builder.Entity<Role>().HasData(new Role() { Id = Guid.NewGuid().ToString(), UserRole = "User" });
-            // Initialize admin Guid
-            string adminGuid = Guid.NewGuid().ToString();
+            builder.Entity<Role>().HasData(new Role() { Id = "8110bff0-12a7-4cc7-906d-a9c052727e06", UserRole = "User" });
 
             builder.Entity<Person>().HasData(new Person()
             {
+                Id = "eaa559e4-090c-4706-a776-ffa16e7a2191",
                 Address = "N/a",
                 City = "Pittsburgh",
                 Email = "N/a",
                 FirstName = "Aaron",
                 LastName = "Cooper",
-                Id = adminGuid,
                 State = "PA",
                 Zipcode = "N/a"
             });
 
             //Add admin user
             var hashedPassword = Auth.GeneratePassword("password");
-            builder.Entity<User>().HasData(new User() { HashedPassword = hashedPassword.HashedPassword, Id = adminGuid, Salt = hashedPassword.Salt, Username = "Admin", RoleId = adminRole.Id });
-
+            builder.Entity<User>().HasData(new User() { HashedPassword = "Ov4B87zmh9j/dEG/y/BQlT3S8FA=", Id = "eaa559e4-090c-4706-a776-ffa16e7a2191",
+                Salt = new byte[] { 92, 251, 117, 81, 232, 198, 132, 52, 28, 94, 233, 112, 135, 156, 117, 187 }, Username = "Admin", RoleId = adminRole.Id });
             #endregion
         }
     }
