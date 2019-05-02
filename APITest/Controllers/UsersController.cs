@@ -75,7 +75,7 @@ namespace APITest.Controllers
 
         // POST: api/Users
         [HttpPost]
-        [Produces(typeof(string))]
+        [Produces(typeof(User))]
         public async Task<IActionResult> PostUser(UserPost submittedUser)
         {
             // if not a valid submission, send 400 response
@@ -84,11 +84,11 @@ namespace APITest.Controllers
                 return BadRequest();
             }
 
-            string token;
+            User user;
             try
             {
-                token = await UserService.Create(submittedUser);
-                return Ok(token);
+                user = await UserService.Create(submittedUser);
+                return Ok(user);
             }
             catch (ConflictException)
             {

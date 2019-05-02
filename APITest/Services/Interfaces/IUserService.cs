@@ -13,7 +13,7 @@ namespace APITest.Services
         Task<IEnumerable<User>> GetAll();
         Task<string> Update(string id, UserPut user);
         void Delete(string id);
-        Task<string> Create(UserPost user);
+        Task<User> Create(UserPost user);
         Task<bool> IsAdmin(User user);
         Task<string> Login(UserCredentials credentials);
         Task<string> GenerateToken(User user);

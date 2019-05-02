@@ -34,7 +34,7 @@ namespace APITest.Services
         /// </summary>
         /// <param name="submittedUser"></param>
         /// <returns></returns>
-        public async Task<string> Create(UserPost submittedUser)
+        public async Task<User> Create(UserPost submittedUser)
         {
             SaltedPassword password = Auth.GeneratePassword(submittedUser.Password);
             User user = new User()
@@ -80,7 +80,7 @@ namespace APITest.Services
                 }
             }
 
-            return await Login(new UserCredentials() { Username = user.Username, Password = submittedUser.Password });
+            return user;
         }
 
         public async Task<User> Get(string id)
