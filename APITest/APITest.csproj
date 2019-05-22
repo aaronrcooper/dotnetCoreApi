@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\ApiTest\ApiTest.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Migrations\20190206164256_AddPersonAndUserEntity.cs" />
     <Compile Remove="Migrations\20190206164256_AddPersonAndUserEntity.Designer.cs" />
