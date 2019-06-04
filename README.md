@@ -48,3 +48,14 @@ be in control of the person's information, and wanted the add and update to take
 idea was a lifesaver in that regard.
 7. Async/Await pattern: For the sake of scalability I wanted to familiarize myself with it. If I did it correctly, I have no idea, but I suppose
 I will find out some day. I like to think that it was done _decently_
+
+#Dev Ops
+
+This section will detail things that I have learned with the Azure Pipeline Dev Ops deployments to Azure.
+
+1. The Azure build script for .NET Core applications are super simple boilerplate scipts. The only necessary modification I think that I made was
+the dotnet restore step.
+2. The release was a little more complicated. I wanted to be able to push my code up with whatever values I needed to develop locally,
+as well as the secrets that were necessary to run on Azure. To do this, I used to variable substitution option on Azure Dev Ops. This allowed me to
+declare variables values within my release pipeline that would be substituted into the `appsettings.json` file during the `Deploy Azure App Service` step in the Release pipeline. 
+This allows me to maintain all of my variables for local development, as well as have the proper variables for Production (or really any other environment). 
