@@ -47,7 +47,7 @@ namespace APITest.Controllers
         // POST api/<controller>
         [HttpPost]
         [Produces(typeof(TodoItem))]
-        public async Task<IActionResult> Post(TodoItem value)
+        public async Task<IActionResult> Post([FromBody] TodoItem value)
         {
             if (!ModelState.IsValid)
             {
@@ -68,7 +68,7 @@ namespace APITest.Controllers
         // PUT api/<controller>/5
         [HttpPut("{id}")]
         [Produces(typeof(TodoItem))]
-        public async Task<IActionResult> Put(string id, TodoItem value)
+        public async Task<IActionResult> Put(string id, [FromBody] TodoItem value)
         {
             if (!ModelState.IsValid)
             {
