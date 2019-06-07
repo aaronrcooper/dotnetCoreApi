@@ -1,0 +1,83 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "apiManagementServiceName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The name of the API Management instance the api should be added to"
+      }
+    },
+    "swaggerDocumentationUrl": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The url to the swagger definition to import"
+      }
+    },
+    "apiName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The name of the api to be created"
+      }
+    },
+    "apiSuffix": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "A suffix to be added to the api url"
+      }
+    },
+    "apiVersion": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The current version of the api to be deployed"
+      }
+    }
+  },
+  "variables": {
+    "versionSetName": "[concat(parameters('apiName'),'-Version-Set')]",
+    "versionSetDescription": "[concat(parameters('apiName'),' Version Set')]",
+    "apiVersionDescription": "[concat(parameters('apiName'),' version ',parameters('apiVersion'))]",
+    "apiVersionName": "[concat(parameters('apiName'),'-',parameters('apiVersion'))]"
+  },
+  "resources": [
+    {
+      "name": "[concat(parameters('apiManagementServiceName'), '/', variables('versionSetName'))]",
+      "type": "Microsoft.ApiManagement/service/api-version-sets",
+      "apiVersion": "2017-03-01",
+      "properties": {
+        "description": "[variables('versionSetDescription')]",
+        "displayName": "[parameters('apiName')]",
+        "versioningScheme": "Segment"
+      }
+    },
+    {
+      "apiVersion": "2017-03-01",
+      "name": "[concat(parameters('apiManagementServiceName'),'/', variables('apiVersionName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/api-version-sets', parameters('apiManagementServiceName'), variables('versionSetName'))]"
+      ],
+      "properties": {
+        "contentFormat": "swagger-link-json",
+        "contentValue": "[parameters('swaggerDocumentationUrl')]",
+        "displayName": "[parameters('apiName')]",
+        "protocols": [
+          "https"
+        ],
+        "path": "[parameters('apiSuffix')]",
+        "isCurrent": true,
+        "apiVersion": "[parameters('apiVersion')]",
+        "apiVersionName": "[parameters('apiVersion')]",
+        "apiVersionDescription": "[variables('apiVersionDescription')]",
+        "apiVersionSetId": "[concat('/api-version-sets/', variables('versionSetName'))]"
+      },
+      "type": "Microsoft.ApiManagement/service/apis"
+    }
+  ],
+  "outputs": {
+  }
+}
