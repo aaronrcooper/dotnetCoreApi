@@ -37,12 +37,17 @@ namespace APITest
                 opt.UseSqlServer(connectionString);
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(opts =>
+                    {
+                        opts.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+                    });
 
             //Swagger generation
             services.AddSwaggerGen(c =>
                 {
-                    c.SwaggerDoc("v1", new Info { Title = "Test API", Version = "v1"});
+                    c.SwaggerDoc("v1", new Info { Title = "Test API", Version = "v1" });
                 });
 
             ConfigureOAuth(services);
