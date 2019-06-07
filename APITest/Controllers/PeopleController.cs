@@ -23,7 +23,7 @@ namespace APITest.Controllers
         // GET: People
         [HttpGet]
         [Produces(typeof(List<Person>))]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> GetPerson()
         {
             return Ok(await _personService.GetAll());
         }
@@ -31,7 +31,7 @@ namespace APITest.Controllers
         // GET: People/Details/5
         [HttpGet("{id}")]
         [Produces(typeof(Person))]
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> PersonDetails(string id)
         {
             if (id == null)
             {
@@ -53,7 +53,7 @@ namespace APITest.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Produces(typeof(Person))]
-        public async Task<IActionResult> Create([FromBody] Person person)
+        public async Task<IActionResult> CreatePerson([FromBody] Person person)
         {
             if (ModelState.IsValid)
             {
@@ -63,7 +63,7 @@ namespace APITest.Controllers
             try
             {
                 await _personService.Create(person);
-                return CreatedAtAction(nameof(Create), person);
+                return CreatedAtAction(nameof(CreatePerson), person);
             }
             catch (PersonNotFoundException e)
             {
@@ -76,7 +76,7 @@ namespace APITest.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPut("{id}")]
         [Produces(typeof(Person))]
-        public async Task<IActionResult> Edit(string id, [FromBody]Person person)
+        public async Task<IActionResult> EditPerson(string id, [FromBody]Person person)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace APITest.Controllers
 
         // POST: People/Delete/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteConfirmed(string id)
+        public IActionResult DeletePerson(string id)
         {
             try
             {

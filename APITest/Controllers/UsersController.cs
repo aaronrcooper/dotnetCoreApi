@@ -50,7 +50,7 @@ namespace APITest.Controllers
         [HttpPut("{id}")]
         [Authorize]
         [Produces(typeof(string))]
-        public async Task<IActionResult> PutUser(string id, UserPut submittedUser)
+        public async Task<IActionResult> EditUser(string id, UserPut submittedUser)
         {
             var authorization = await AuthorizationService.AuthorizeAsync(User, submittedUser.UserId, "IsCurrentUser");
 
@@ -76,7 +76,7 @@ namespace APITest.Controllers
         // POST: api/Users
         [HttpPost]
         [Produces(typeof(User))]
-        public async Task<IActionResult> PostUser(UserPost submittedUser)
+        public async Task<IActionResult> CreateUser(UserPost submittedUser)
         {
             // if not a valid submission, send 400 response
             if (!ModelState.IsValid)

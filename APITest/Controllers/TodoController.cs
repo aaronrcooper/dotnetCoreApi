@@ -23,7 +23,7 @@ namespace APITest.Controllers
         // GET: api/<controller>
         [HttpGet]
         [Produces(typeof(IEnumerable<TodoItem>))]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAllTodos()
         {
             return Ok(await TodoService.GetAll());
         }
@@ -47,7 +47,7 @@ namespace APITest.Controllers
         // POST api/<controller>
         [HttpPost]
         [Produces(typeof(TodoItem))]
-        public async Task<IActionResult> Post([FromBody] TodoItem value)
+        public async Task<IActionResult> PostTodo([FromBody] TodoItem value)
         {
             if (!ModelState.IsValid)
             {
@@ -68,7 +68,7 @@ namespace APITest.Controllers
         // PUT api/<controller>/5
         [HttpPut("{id}")]
         [Produces(typeof(TodoItem))]
-        public async Task<IActionResult> Put(string id, [FromBody] TodoItem value)
+        public async Task<IActionResult> EditTodo(string id, [FromBody] TodoItem value)
         {
             if (!ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace APITest.Controllers
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
         [Produces(typeof(TodoItem))]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> DeleteTodo(string id)
         {
             try
             {
