@@ -47,7 +47,7 @@ namespace APITest.Controllers
         // POST api/<controller>
         [HttpPost]
         [Produces(typeof(TodoItem))]
-        public async Task<IActionResult> PostTodo([FromBody] TodoItem value)
+        public async Task<IActionResult> CreateTodo([FromBody] TodoItem value)
         {
             if (!ModelState.IsValid)
             {
