@@ -9,46 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190206164256_AddPersonAndUserEntity.cs" />
-    <Compile Remove="Migrations\20190206164256_AddPersonAndUserEntity.Designer.cs" />
-    <Compile Remove="Migrations\20190206202045_AddUserAndPerson.cs" />
-    <Compile Remove="Migrations\20190206202045_AddUserAndPerson.Designer.cs" />
-    <Compile Remove="Migrations\20190207135622_Add.cs" />
-    <Compile Remove="Migrations\20190207135622_Add.Designer.cs" />
-    <Compile Remove="Migrations\20190207135828_Add.cs" />
-    <Compile Remove="Migrations\20190207135828_Add.Designer.cs" />
-    <Compile Remove="Migrations\20190207140239_Add.cs" />
-    <Compile Remove="Migrations\20190207140239_Add.Designer.cs" />
-    <Compile Remove="Migrations\20190207141853_Add.cs" />
-    <Compile Remove="Migrations\20190207141853_Add.Designer.cs" />
-    <Compile Remove="Migrations\20190207142456_Add.cs" />
-    <Compile Remove="Migrations\20190207142456_Add.Designer.cs" />
-    <Compile Remove="Migrations\20190207142737_Add.cs" />
-    <Compile Remove="Migrations\20190207142737_Add.Designer.cs" />
-    <Compile Remove="Migrations\20190207143234_AddPersonAndUser.cs" />
-    <Compile Remove="Migrations\20190207143234_AddPersonAndUser.Designer.cs" />
-    <Compile Remove="Migrations\20190207151115_PersonAndUser.cs" />
-    <Compile Remove="Migrations\20190207151115_PersonAndUser.Designer.cs" />
-    <Compile Remove="Migrations\20190207151459_AddPersonAndUserEntity.cs" />
-    <Compile Remove="Migrations\20190207151459_AddPersonAndUserEntity.Designer.cs" />
-    <Compile Remove="Migrations\20190306151516_UpdatePersonAndUserFields.cs" />
-    <Compile Remove="Migrations\20190306151516_UpdatePersonAndUserFields.Designer.cs" />
-    <Compile Remove="Migrations\20190306151812_UpdateFields.cs" />
-    <Compile Remove="Migrations\20190306151812_UpdateFields.Designer.cs" />
-    <Compile Remove="Migrations\20190307172553_AddRoles.cs" />
-    <Compile Remove="Migrations\20190307172553_AddRoles.Designer.cs" />
-    <Compile Remove="Migrations\20190321125024_AddUserFKToTodo.cs" />
-    <Compile Remove="Migrations\20190321125024_AddUserFKToTodo.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
@@ -56,7 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DTO\DTO.csproj" />
+    <ProjectReference Include="..\APITest.Business\APITest.Business.csproj" />
+    <ProjectReference Include="..\APITest.Domain\APITest.Domain.csproj" />
+    <ProjectReference Include="..\DTO\APITest.DTO.csproj" />
   </ItemGroup>
 
 </Project>

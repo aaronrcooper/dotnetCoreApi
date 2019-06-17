@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using APITest.Exceptions.NotFound;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DTO;
-using APITest.Services;
+using Business.Exceptions.NotFound;
+using Business.Services;
 
 namespace APITest.Controllers
 {
@@ -31,7 +30,7 @@ namespace APITest.Controllers
         // GET: People/Details/5
         [HttpGet("{id}")]
         [Produces(typeof(Person))]
-        public async Task<IActionResult> PersonDetails(string id)
+        public async Task<IActionResult> PersonDetails(Guid id)
         {
             if (id == null)
             {
@@ -76,7 +75,7 @@ namespace APITest.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPut("{id}")]
         [Produces(typeof(Person))]
-        public async Task<IActionResult> EditPerson(string id, [FromBody]Person person)
+        public async Task<IActionResult> EditPerson(Guid id, [FromBody]Person person)
         {
             try
             {
@@ -92,7 +91,7 @@ namespace APITest.Controllers
 
         // POST: People/Delete/5
         [HttpDelete("{id}")]
-        public IActionResult DeletePerson(string id)
+        public IActionResult DeletePerson(Guid id)
         {
             try
             {

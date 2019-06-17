@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using APITest.Exceptions.BadRequest;
-using APITest.Exceptions.NotFound;
-using APITest.Services;
 using Microsoft.AspNetCore.Mvc;
 using DTO;
+using Business.Exceptions.NotFound;
+using System;
+using Business.Exceptions.BadRequest;
+using Business.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,7 +32,7 @@ namespace APITest.Controllers
         // GET api/<controller>/5
         [HttpGet("{id}")]
         [Produces(typeof(TodoItem))]
-        public async Task<IActionResult> GetTodoItem(string id)
+        public async Task<IActionResult> GetTodoItem(Guid id)
         {
             try
             {
@@ -68,7 +69,7 @@ namespace APITest.Controllers
         // PUT api/<controller>/5
         [HttpPut("{id}")]
         [Produces(typeof(TodoItem))]
-        public async Task<IActionResult> EditTodo(string id, [FromBody] TodoItem value)
+        public async Task<IActionResult> EditTodo(Guid id, [FromBody] TodoItem value)
         {
             if (!ModelState.IsValid)
             {
@@ -89,7 +90,7 @@ namespace APITest.Controllers
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
         [Produces(typeof(TodoItem))]
-        public IActionResult DeleteTodo(string id)
+        public IActionResult DeleteTodo(Guid id)
         {
             try
             {

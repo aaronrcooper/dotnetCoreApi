@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DTO;
-using APITest.Exceptions.BadRequest;
-using APITest.Exceptions.Conflict;
-using APITest.Exceptions.NotFound;
-using APITest.Services;
 using Microsoft.AspNetCore.Authorization;
+using Business.Exceptions.BadRequest;
+using Business.Exceptions.Conflict;
+using Business.Exceptions.NotFound;
+using Business.Services;
 
 namespace APITest.Controllers
 {
@@ -34,7 +34,7 @@ namespace APITest.Controllers
         // GET: api/Users/5
         [HttpGet("{id}")]
         [Produces(typeof(User))]
-        public async Task<IActionResult> GetUser(string id)
+        public async Task<IActionResult> GetUser(System.Guid id)
         {
             var user = await UserService.Get(id);
 
@@ -50,7 +50,7 @@ namespace APITest.Controllers
         [HttpPut("{id}")]
         [Authorize]
         [Produces(typeof(string))]
-        public async Task<IActionResult> EditUser(string id, UserPut submittedUser)
+        public async Task<IActionResult> EditUser(Guid id, UserPut submittedUser)
         {
             var authorization = await AuthorizationService.AuthorizeAsync(User, submittedUser.UserId, "IsCurrentUser");
 
