@@ -102,11 +102,11 @@ namespace APITest.Controllers
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
+        public IActionResult DeleteUser(string id)
         {
             try
             {
-                await Task.Run(() => UserService.Delete(id));
+                UserService.Delete(id);
                 return NoContent();
             }
             catch (UserNotFoundException )

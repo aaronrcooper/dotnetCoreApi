@@ -49,7 +49,7 @@ idea was a lifesaver in that regard.
 7. Async/Await pattern: For the sake of scalability I wanted to familiarize myself with it. If I did it correctly, I have no idea, but I suppose
 I will find out some day. I like to think that it was done _decently_
 
-#Dev Ops
+##Dev Ops
 
 This section will detail things that I have learned with the Azure Pipeline Dev Ops deployments to Azure.
 

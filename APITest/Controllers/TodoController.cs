@@ -89,11 +89,11 @@ namespace APITest.Controllers
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
         [Produces(typeof(TodoItem))]
-        public async Task<IActionResult> DeleteTodo(string id)
+        public IActionResult DeleteTodo(string id)
         {
             try
             {
-                await Task.Run(() => TodoService.Delete(id));
+                TodoService.Delete(id);
                 return NoContent();
             }
             catch (TodoNotFoundException )
