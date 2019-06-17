@@ -6,7 +6,7 @@ using APITest.Exceptions.NotFound;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using APITest.Models;
+using DTO;
 using APITest.Services;
 
 namespace APITest.Controllers

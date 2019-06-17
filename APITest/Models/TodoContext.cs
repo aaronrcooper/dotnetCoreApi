@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APITest.Shared;
 using Microsoft.EntityFrameworkCore;
+using DTO;
 
 namespace APITest.Models
 {

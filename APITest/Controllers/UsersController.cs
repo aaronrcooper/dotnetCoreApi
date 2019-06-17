@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using APITest.Models;
+using DTO;
 using APITest.Exceptions.BadRequest;
 using APITest.Exceptions.Conflict;
 using APITest.Exceptions.NotFound;

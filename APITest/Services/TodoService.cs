@@ -4,8 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using APITest.Exceptions.BadRequest;
 using APITest.Exceptions.NotFound;
-using APITest.Models;
 using Microsoft.EntityFrameworkCore;
+using DTO;
+using APITest.Models;
 
 namespace APITest.Services
 {

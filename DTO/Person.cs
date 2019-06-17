@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace APITest.Models
+namespace DTO
 {
     [Table("People")]
     public class Person

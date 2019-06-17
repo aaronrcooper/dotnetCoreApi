@@ -13,6 +13,8 @@ using APITest.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using DTO;
+
 
 namespace APITest.Services
 {

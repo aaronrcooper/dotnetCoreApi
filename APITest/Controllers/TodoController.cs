@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using APITest.Exceptions.BadRequest;
 using APITest.Exceptions.NotFound;
-using APITest.Models;
 using APITest.Services;
 using Microsoft.AspNetCore.Mvc;
+using DTO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
