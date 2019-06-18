@@ -29,7 +29,7 @@ namespace Business.Services
 
             if (person == null)
             {
-                throw new PersonNotFoundException(id);
+                throw new PersonNotFoundException(id.ToString());
             }
 
             _context.Persons.Remove(person);

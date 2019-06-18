@@ -6,6 +6,7 @@ using Business.Exceptions.BadRequest;
 using Business.Exceptions.NotFound;
 using Microsoft.EntityFrameworkCore;
 using APITest.Domain;
+using APITest.Domain.Models;
 
 namespace Business.Services
 {

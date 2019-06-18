@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using APITest.Models;
 using Business.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,6 +14,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Authorization;
 using APITest.Business.Authorization.Rules;
 using APITest.Business.Authorization.Handlers;
+using APITest.Domain;
 
 namespace APITest
 {
