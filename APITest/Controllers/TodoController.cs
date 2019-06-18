@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using DTO;
 using Business.Exceptions.NotFound;
 using System;
 using Business.Exceptions.BadRequest;
 using Business.Services;
+using APITest.Domain.Models;
+using AutoMapper;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,14 +17,16 @@ namespace APITest.Controllers
     {
 
         private readonly ITodoService TodoService;
+        private readonly IMapper _mapper;
 
-        public TodoController(ITodoService todoService)
+        public TodoController(ITodoService todoService, IMapper mapper)
         {
             TodoService = todoService;
+            _mapper = mapper;
         }
         // GET: api/<controller>
         [HttpGet]
-        [Produces(typeof(IEnumerable<TodoItem>))]
+        [Produces(typeof(IEnumerable<DTO.TodoItem>))]
         public async Task<IActionResult> GetAllTodos()
         {
             return Ok(await TodoService.GetAll());
@@ -31,13 +34,13 @@ namespace APITest.Controllers
 
         // GET api/<controller>/5
         [HttpGet("{id}")]
-        [Produces(typeof(TodoItem))]
+        [Produces(typeof(DTO.TodoItem))]
         public async Task<IActionResult> GetTodoItem(Guid id)
         {
             try
             {
                 var todo = await TodoService.Get(id);
-                return Ok(todo);
+                return Ok(_mapper.Map<TodoItem, DTO.TodoItem>(todo));
             }
             catch (TodoNotFoundException )
             {
@@ -47,7 +50,7 @@ namespace APITest.Controllers
 
         // POST api/<controller>
         [HttpPost]
-        [Produces(typeof(TodoItem))]
+        [Produces(typeof(DTO.TodoItem))]
         public async Task<IActionResult> CreateTodo([FromBody] TodoItem value)
         {
             if (!ModelState.IsValid)
@@ -58,7 +61,7 @@ namespace APITest.Controllers
             try
             {
                 var todo = await TodoService.Create(value);
-                return CreatedAtAction(nameof(GetTodoItem), new { id = value.Id }, value);
+                return CreatedAtAction(nameof(GetTodoItem), new { id = value.Id }, _mapper.Map<TodoItem, DTO.TodoItem>(value));
             }
             catch (BadRequestException )
             {
@@ -68,7 +71,7 @@ namespace APITest.Controllers
 
         // PUT api/<controller>/5
         [HttpPut("{id}")]
-        [Produces(typeof(TodoItem))]
+        [Produces(typeof(DTO.TodoItem))]
         public async Task<IActionResult> EditTodo(Guid id, [FromBody] TodoItem value)
         {
             if (!ModelState.IsValid)
@@ -79,7 +82,7 @@ namespace APITest.Controllers
             try
             {
                 var updatedTodo = await TodoService.Update(id, value);
-                return Ok(updatedTodo);
+                return Ok(_mapper.Map<TodoItem, DTO.TodoItem>(updatedTodo));
             }
             catch (BadRequestException)
             {
@@ -89,7 +92,6 @@ namespace APITest.Controllers
 
         // DELETE api/<controller>/5
         [HttpDelete("{id}")]
-        [Produces(typeof(TodoItem))]
         public IActionResult DeleteTodo(Guid id)
         {
             try

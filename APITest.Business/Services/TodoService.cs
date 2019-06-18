@@ -19,7 +19,7 @@ namespace Business.Services
             _context = context;
         }
 
-        public async Task<DTO.TodoItem> Create(TodoItem todo)
+        public async Task<TodoItem> Create(TodoItem todo)
         {
             await _context.TodoItems.AddAsync(todo);
             await _context.SaveChangesAsync();
@@ -39,7 +39,7 @@ namespace Business.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<DTO.TodoItem> Get(Guid id)
+        public async Task<TodoItem> Get(Guid id)
         {
             var todo = await _context.TodoItems.SingleAsync(item => item.Id == id);
 
@@ -51,12 +51,12 @@ namespace Business.Services
             return todo;
         }
 
-        public async Task<IEnumerable<DTO.TodoItem>> GetAll()
+        public async Task<IEnumerable<TodoItem>> GetAll()
         {
             return await _context.TodoItems.ToListAsync();
         }
 
-        public async Task<DTO.TodoItem> Update(Guid id, TodoItem todo)
+        public async Task<TodoItem> Update(Guid id, TodoItem todo)
         {
             if (todo.Id != id)
             {

@@ -17,7 +17,7 @@ namespace Business.Services
             _context = context;
         }
 
-        public async Task<DTO.Person> Create(Person person)
+        public async Task<Person> Create(Person person)
         {
             await _context.Persons.AddAsync(person);
             return person;
@@ -36,7 +36,7 @@ namespace Business.Services
             _context.SaveChanges();
         }
 
-        public async Task<DTO.Person> Get(Guid id)
+        public async Task<Person> Get(Guid id)
         {
             var person = await _context.Persons.FirstOrDefaultAsync(p => p.Id == id);
 
@@ -48,12 +48,12 @@ namespace Business.Services
             return person;
         }
 
-        public async Task<IEnumerable<DTO.Person>> GetAll()
+        public async Task<IEnumerable<Person>> GetAll()
         {
             return await _context.Persons.ToListAsync();
         }
 
-        public async Task<DTO.Person> Update(Guid id, Person person)
+        public async Task<Person> Update(Guid id, Person person)
         {
             if (id == person.Id)
             {

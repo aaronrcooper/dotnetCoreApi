@@ -10,13 +10,10 @@ namespace DTO
         // Generate a GUID for this field 
         public Guid Id { get; set; }
         public string Username { get; set; }
-        public byte[] Salt { get; set; }
-        public string HashedPassword { get; set; }
         public Guid RoleId { get; set; }
 
         // Navigation Properties
         public virtual Person Person { get; set; }
-        public virtual Role Role { get; set; }
         public virtual ICollection<TodoItem> TodoItems { get; set; }
     }
 
@@ -39,5 +36,11 @@ namespace DTO
         public Person Person { get; set; }
         public Guid UserId { get; set; }
         public string Password { get; set; }
+    }
+
+    public class LoggedInUser
+    {
+        public string Username { get; set; }
+        public string JSONWebToken { get; set; }
     }
 }

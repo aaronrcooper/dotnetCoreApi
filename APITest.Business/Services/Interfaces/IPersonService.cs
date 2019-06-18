@@ -8,10 +8,10 @@ namespace Business.Services
 {
     public interface IPersonService
     {
-        Task<DTO.Person> Get(Guid id);
-        Task<IEnumerable<DTO.Person>> GetAll();
-        Task<DTO.Person> Update(Guid id, Person person);
+        Task<Person> Get(Guid id);
+        Task<IEnumerable<Person>> GetAll();
+        Task<Person> Update(Guid id, Person person);
         void Delete(Guid id);
-        Task<DTO.Person> Create(Person person);
+        Task<Person> Create(Person person);
     }
 }

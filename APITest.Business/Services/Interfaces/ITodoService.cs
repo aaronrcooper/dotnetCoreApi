@@ -10,10 +10,10 @@ namespace Business.Services
 {
     public interface ITodoService
     {
-        Task<DTO.TodoItem> Get(Guid id);
-        Task<IEnumerable<DTO.TodoItem>> GetAll();
-        Task<DTO.TodoItem> Update(Guid id, TodoItem todo);
+        Task<TodoItem> Get(Guid id);
+        Task<IEnumerable<TodoItem>> GetAll();
+        Task<TodoItem> Update(Guid id, TodoItem todo);
         void Delete(Guid id);
-        Task<DTO.TodoItem> Create(TodoItem todo);
+        Task<TodoItem> Create(TodoItem todo);
     }
 }

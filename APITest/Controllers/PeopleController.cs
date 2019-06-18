@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DTO;
 using Business.Exceptions.NotFound;
 using Business.Services;
+using AutoMapper;
+using APITest.Domain.Models;
 
 namespace APITest.Controllers
 {
@@ -14,9 +15,12 @@ namespace APITest.Controllers
     public class PeopleController : Controller
     {
         private IPersonService _personService;
-        public PeopleController(IPersonService personService)
+        private IMapper _mapper;
+
+        public PeopleController(IPersonService personService, IMapper mapper)
         {
             _personService = personService;
+            _mapper = mapper;
         }
 
         // GET: People
@@ -24,12 +28,14 @@ namespace APITest.Controllers
         [Produces(typeof(List<Person>))]
         public async Task<IActionResult> GetPerson()
         {
-            return Ok(await _personService.GetAll());
+            var people = await _personService.GetAll();
+
+            return Ok(_mapper.Map<IEnumerable<Person>, IEnumerable<DTO.Person>>(people));
         }
 
         // GET: People/Details/5
         [HttpGet("{id}")]
-        [Produces(typeof(Person))]
+        [Produces(typeof(DTO.Person))]
         public async Task<IActionResult> PersonDetails(Guid id)
         {
             if (id == null)
@@ -39,7 +45,9 @@ namespace APITest.Controllers
 
             try
             {
-                return Ok(await _personService.Get(id));
+                var person = await _personService.Get(id);
+                _mapper.Map<Person, DTO.Person>(person);
+                return Ok();
             }
             catch (PersonNotFoundException e)
             {
@@ -51,7 +59,7 @@ namespace APITest.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Produces(typeof(Person))]
+        [Produces(typeof(DTO.Person))]
         public async Task<IActionResult> CreatePerson([FromBody] Person person)
         {
             if (ModelState.IsValid)
@@ -62,7 +70,7 @@ namespace APITest.Controllers
             try
             {
                 await _personService.Create(person);
-                return CreatedAtAction(nameof(CreatePerson), person);
+                return CreatedAtAction(nameof(CreatePerson), _mapper.Map<Person, DTO.Person>(person));
             }
             catch (PersonNotFoundException e)
             {
@@ -74,7 +82,7 @@ namespace APITest.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPut("{id}")]
-        [Produces(typeof(Person))]
+        [Produces(typeof(DTO.Person))]
         public async Task<IActionResult> EditPerson(Guid id, [FromBody]Person person)
         {
             try
@@ -86,7 +94,7 @@ namespace APITest.Controllers
                 return NotFound(e.Message);
             }
 
-            return Ok(person);
+            return Ok(_mapper.Map<Person, DTO.Person>(person));
         }
 
         // POST: People/Delete/5

@@ -35,7 +35,7 @@ namespace Business.Services
         /// </summary>
         /// <param name="submittedUser"></param>
         /// <returns></returns>
-        public async Task<DTO.User> Create(DTO.UserPost submittedUser)
+        public async Task<User> Create(UserPost submittedUser)
         {
             SaltedPassword password = Auth.GeneratePassword(submittedUser.Password);
             User user = new User()
@@ -84,7 +84,7 @@ namespace Business.Services
             return user;
         }
 
-        public async Task<DTO.User> Get(Guid id)
+        public async Task<User> Get(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
 
@@ -96,13 +96,13 @@ namespace Business.Services
             return user;
         }
 
-        public async Task<IEnumerable<DTO.User>> GetAll()
+        public async Task<IEnumerable<User>> GetAll()
         {
             return await _context.Users.ToListAsync();
         }
 
 
-        public async Task<string> Update(Guid id, DTO.UserPut submittedUser)
+        public async Task<LoggedInUser> Update(Guid id, UserPut submittedUser)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == submittedUser.UserId);
 
@@ -135,7 +135,7 @@ namespace Business.Services
                 }
             }
 
-            return await Login(new DTO.UserCredentials() { Username = user.Username, Password = submittedUser.Password });
+            return await Login(new UserCredentials() { Username = user.Username, Password = submittedUser.Password });
         }
 
         public void Delete(Guid id)
@@ -170,11 +170,11 @@ namespace Business.Services
         }
 
         /// <summary>
-        /// Returns a token if the user credentials match, returns null if they do not
+        /// Returns a user with a token if the user credentials match, returns null if they do not
         /// </summary>
         /// <param name="credentials"></param>
         /// <returns></returns>
-        public async Task<string> Login(DTO.UserCredentials credentials)
+        public async Task<LoggedInUser> Login(UserCredentials credentials)
         {
             var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Username == credentials.Username);
 
@@ -185,7 +185,14 @@ namespace Business.Services
 
             if (Auth.VerifyPassword(credentials.Password, user.Salt, user.HashedPassword))
             {
-                return await GenerateToken(user);
+                // Generate a JWT
+                var token = await GenerateToken(user);
+                // Return the user object
+                return new LoggedInUser()
+                {
+                    User = user,
+                    JSONWebToken = token
+                };
             }
 
             return null;

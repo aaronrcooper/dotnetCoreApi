@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using APITest.Business.Authorization.Rules;
 using APITest.Business.Authorization.Handlers;
 using APITest.Domain;
+using AutoMapper;
 
 namespace APITest
 {
@@ -48,6 +50,7 @@ namespace APITest
             services.AddSwaggerGen(c =>
                 {
                     c.SwaggerDoc("v1", new Info { Title = "Test API", Version = "v1" });
+                    c.CustomSchemaIds(operation => operation.FullName);
                 });
 
             ConfigureOAuth(services);
@@ -57,6 +60,12 @@ namespace APITest
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITodoService, TodoService>();
             services.AddSingleton<IConfiguration>(Configuration);
+        }
+
+        public void ConfigureAutoMapper(IServiceCollection services)
+        {
+            // Configure automapper using the assemblies present in the application
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,9 +122,9 @@ namespace APITest
 
         public void ConfigureAuth(IServiceCollection services)
         {
-            // Add a policy that requires the user attempting to perform the operation to be the current user
             services.AddAuthorization(opts =>
             {
+                // Add a policy that requires the user attempting to perform the operation to be the current user
                 opts.AddPolicy("IsCurrentUser", policy =>
                 {
                     policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
