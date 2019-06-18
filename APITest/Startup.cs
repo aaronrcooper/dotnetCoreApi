@@ -55,6 +55,8 @@ namespace APITest
 
             ConfigureOAuth(services);
             ConfigureAuth(services);
+            ConfigureAutoMapper(services);
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IUserService, UserService>();
