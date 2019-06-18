@@ -36,7 +36,7 @@ namespace APITest
 
             services.AddDbContext<TodoContext>(opt =>
             {
-                opt.UseSqlServer(connectionString);
+                opt.UseSqlServer(connectionString, opts => opts.MigrationsAssembly("APITest.Domain"));
             });
 
             services.AddMvc()

@@ -8,11 +8,20 @@ This project created a new database, as well as updates the tables using Entity 
 ## Database Schema can be updated using the following commands:
 Add-Migration
   - This will prompt for a name for the update that will be added to the `_EFMigrationHistory` table in the created database.
+  - With the Refactor of the Domain into its own project, the command for adding a new migration to the project is now
+  `Add-Migration "MigrationName" -Project Project-Name-Containing-Migrations`
+    - An example in this project would look like `Add-Migration "Refactor" -Project APITest.Domain`
+
+Remove-Migration
+  - Removing migrations was updated in a similar manner with the architecture change, it was updated to `Remove-Migration -Project Project-Name-Containing-Migrations`
+    - An example in this project would look like `Remove-Migration -Project APITest.Domain`
 
 Update-Database
   - This command will update the schema of the database.
+  - Updating the database has changed with the architecture change as well. It was updated to `Update-Database -Project Project-Name-Containing-Migrations`
+    - An example in this project would look like `Update-Database -Project APITest.Domain`
   - Passing the `-Migration` argument along with a migration name will allow you to revert back to that migration. 
-    ex. `Update-Database -Migration:"InitialMigration"`
+    - ex. `Update-Database -Migration:"InitialMigration"`
 
 ## Desired features from this test API
 - Ability to add user entities

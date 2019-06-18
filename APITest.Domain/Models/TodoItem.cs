@@ -13,7 +13,7 @@ namespace APITest.Domain.Models
         public string Name { get; set; }
         public bool IsComplete { get; set; }
         [ForeignKey("User")]
-        public string userId { get; set; }
+        public Guid userId { get; set; }
 
         public virtual User user { get; set; }
     }
