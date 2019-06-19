@@ -59,6 +59,14 @@ be in control of the person's information, and wanted the add and update to take
 idea was a lifesaver in that regard.
 7. Async/Await pattern: For the sake of scalability I wanted to familiarize myself with it. If I did it correctly, I have no idea, but I suppose
 I will find out some day. I like to think that it was done _decently_
+8. *AutoMapper* has very poor documentation. However, it is a powerful tool for mapping your view model to your data model. It allowed me to be lazy and use minimal
+effort to achieve what I wanted. It even applies the same profile logic to `IEnumerable` objects, which is very, _very_ nice. The setup was relatively simple, once
+I found some decent guides on how to set it up. The documentation was really almost no help, though.
+9. Response Serialization can sometimes get messy when your navigation properties relate back to each other and create a circular dependency. This can be ignored by
+using the `opts.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore` line in the JSON configuration options in the `Startup.cs` file. 
+10. Moving the entire context, along with its related properties, into it's own project was as simple as manually migrating those files, then adding this line to the
+`ConfigureServices` method in the `Startup.cs` file:
+  - `opt.UseSqlServer(connectionString, opts => opts.MigrationsAssembly("APITest.Domain"));`
 
 ## Dev Ops
 This section will detail things that I have learned with the Azure Pipeline Dev Ops deployments to Azure.
