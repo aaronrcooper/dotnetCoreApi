@@ -86,7 +86,8 @@ namespace Business.Services
 
         public async Task<User> Get(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.Include(p => p.Person)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (user == null)
             {
@@ -98,13 +99,14 @@ namespace Business.Services
 
         public async Task<IEnumerable<User>> GetAll()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users.Include(p => p.Person).ToListAsync();
         }
 
 
         public async Task<LoggedInUser> Update(Guid id, UserPut submittedUser)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == submittedUser.UserId);
+            var user = await _context.Users.Include(p => p.Person)
+                .FirstOrDefaultAsync(u => u.Id == submittedUser.UserId);
 
             if (!string.IsNullOrEmpty(submittedUser.Password))
             {

@@ -44,6 +44,7 @@ namespace APITest
                 .AddJsonOptions(opts =>
                     {
                         opts.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+                        opts.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                     });
 
             //Swagger generation
