@@ -29,7 +29,7 @@ namespace APITest.Controllers
 
         // GET: api/Users
         [HttpGet]
-        [Produces(typeof(IEnumerable<User>))]
+        [Produces(typeof(IEnumerable<DTO.User>))]
         public async Task<IActionResult> GetUsers()
         {
             var users = await UserService.GetAll();

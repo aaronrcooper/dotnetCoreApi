@@ -25,7 +25,7 @@ namespace APITest.Controllers
 
         // GET: People
         [HttpGet]
-        [Produces(typeof(List<Person>))]
+        [Produces(typeof(List<DTO.Person>))]
         public async Task<IActionResult> GetPerson()
         {
             var people = await _personService.GetAll();
